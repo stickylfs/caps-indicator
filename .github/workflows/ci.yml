@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Lint & test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace
+
+  build:
+    name: Build (${{ matrix.target }})
+    needs: test
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            arch: x64
+            output_name: caps-indicator-setup.exe
+          - target: i686-pc-windows-msvc
+            arch: x86
+            output_name: caps-indicator-setup-x86.exe
+          - target: aarch64-pc-windows-msvc
+            arch: x64_arm64
+            output_name: caps-indicator-setup-arm64.exe
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          # The installer embeds the application: build it first.
+          cargo build --release --target ${{ matrix.target }} -p caps-indicator
+          cargo build --release --target ${{ matrix.target }} -p caps-indicator-installer
+          Copy-Item target/${{ matrix.target }}/release/caps-indicator-setup.exe dist/${{ matrix.output_name }}
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.target }}
+          path: dist/${{ matrix.output_name }}

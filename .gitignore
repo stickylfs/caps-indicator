@@ -1,0 +1,30 @@
+# Rust build output
+/target
+/dist
+**/*.rs.bk
+*.pdb
+
+# Signing keys and certificates
+*.pfx
+*.cer
+*.p12
+
+# Logs and temporary files
+*.log
+*.tmp
+*.old
+*.old.*
+
+# Windows / macOS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+.DS_Store
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

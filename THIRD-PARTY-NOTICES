@@ -1,0 +1,17 @@
+# Third-Party Notices
+
+caps-indicator includes the following open-source components. Their full license
+texts are available in the linked repositories.
+
+## Linked into the executables
+
+| Component | License | Source |
+| :--- | :--- | :--- |
+| windows-sys, windows-targets (application) | MIT OR Apache-2.0 | https://github.com/microsoft/windows-rs |
+| windows, windows-core (installer) | MIT OR Apache-2.0 | https://github.com/microsoft/windows-rs |
+
+## Build-time only (not distributed)
+
+| Component | License | Source |
+| :--- | :--- | :--- |
+| winres | MIT | https://github.com/mxre/winres |
